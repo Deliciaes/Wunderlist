@@ -342,13 +342,13 @@ if (isset($_GET['showListItemsOnly'])) {
                     <div class="col-sm"><b>Deadline:</b> <span class="deadline"><?php echo htmlspecialchars($tasks[$i]['deadline']) ?></div>
                     <div class="col-sm"><b>Completed:</b>
                         <?php
-                        if ($tasks[$i]['completed'] === '1') {
+                        if ($tasks[$i]['completed'] === '1' || $tasks[$i]['completed'] === 1) {
                             echo 'Yes';
                         } else {
                             echo 'No';
                         } ?>
                     </div>
-                    <div class="col-sm"><b>Belongs to list: </b><span class="list" id="<?php echo htmlspecialchars($tasks[$i]['list_id']) ?>"><?php echo htmlspecialchars($tasks[$i]['title']) ?></span></div>
+                    <div class="col-sm"><b>Belongs to list: </b><span class="list" id="<?php echo ($tasks[$i]['list_id']) ?>"><?php echo htmlspecialchars($tasks[$i]['title']) ?></span></div>
 
                     <button type="button" class="editTaskButton" id="<?php echo $tasks[$i]['task_id'] ?>">Edit</button>
                 </div>
