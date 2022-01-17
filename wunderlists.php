@@ -350,7 +350,7 @@ if (isset($_GET['showListItemsOnly'])) {
                     </div>
                     <div class="col-sm"><b>Belongs to list: </b><span class="list" id="<?php echo htmlspecialchars($tasks[$i]['list_id']) ?>"><?php echo htmlspecialchars($tasks[$i]['title']) ?></span></div>
 
-                    <button type="button" class="editTaskButton" id="<?php echo htmlspecialchars($tasks[$i]['task_id']) ?>">Edit</button>
+                    <button type="button" class="editTaskButton" id="<?php echo $tasks[$i]['task_id'] ?>">Edit</button>
                 </div>
             <?php endfor; ?>
         </div>
