@@ -75,6 +75,28 @@ if (isset($_POST['editTaskCompleted'])) {
     }
 }
 
+$_SESSION['successMsg'] = 'The sticky "' . $_POST['editTaskName'] . '" is updated.';
+
+if (isset($_POST['completeAllTasks'])) {
+    $listId = $_POST['completeAllTasks'];
+    $completed = 1;
+    $statement = $database->prepare('UPDATE tasks SET completed = :completed WHERE list_id = :list_id');
+    $statement->bindParam(':list_id', $listId, PDO::PARAM_INT);
+    $statement->bindParam(':completed', $completed, PDO::PARAM_BOOL);
+    $statement->execute();
+}
+
+if (isset($_POST['completeAllTasksOnCorkboard'])) {
+    $listId = $_POST['completeAllTasksOnCorkboard'];
+    $completed = 1;
+    $statement = $database->prepare('UPDATE tasks SET completed = :completed WHERE list_id = :list_id');
+    $statement->bindParam(':list_id', $listId, PDO::PARAM_INT);
+    $statement->bindParam(':completed', $completed, PDO::PARAM_BOOL);
+    $statement->execute();
+
+    $_SESSION['successMsg'] = 'Everything in this list is marked as completed.';
+}
+
 if (isset($_POST['editListName'])) {
     $listName = trim(filter_var(($_POST['editListName']), FILTER_SANITIZE_STRING));
     $listId = $_POST['listIdToUpdate'];
@@ -86,7 +108,5 @@ if (isset($_POST['editListName'])) {
     $_SESSION['successMsg'] = 'The list "' . $_POST['editListName'] . '" is updated.';
     redirect('/wunderlists.php');
 }
-
-$_SESSION['successMsg'] = 'The sticky "' . $_POST['editTaskName'] . '" is updated.';
 
 redirect('/wunderlists.php');

@@ -9,9 +9,16 @@ checkUserLoginStatus();
 <?php
 
 $lists = fetchAllLists($database);
-$tasks = fetchAllTasks($database);
+
+if (isset($_GET['search'])) {
+    $tasks = searchTask($database, $_GET['search']);
+} else {
+    $tasks = fetchAllTasks($database);
+}
 
 ?>
+
+
 <div class="d-flex flex-row justify-content-center">
 
     <div class=" p-2"> <button type="button" id="showCreateTask" class="btn btn-link"><b>Create new sticky</b></button>
@@ -188,9 +195,12 @@ $tasks = fetchAllTasks($database);
                         <select id="listIdToUpdate" name="listIdToUpdate" class="form-control">
                             <option disabled selected value>Your lists:</option>
                             <?php
+
+
                             for ($i = 0; $i < count($lists); $i++) : ?>
                                 <option value="<?php echo $lists[$i]['id'] ?>"><?php echo htmlspecialchars($lists[$i]['title']) ?></option>
                             <?php endfor; ?>
+
                         </select>
                         <button type="button" id="editList" class="btn btn-primary margin10px" value="">Edit list</button>
                     </form>
@@ -208,21 +218,35 @@ $tasks = fetchAllTasks($database);
             <div class="card-body">
                 <div class="container">
                     <h2 id="listTitle" class="permanentMarker"></h2>
+
                     <form action="/app/posts/update.php" method="POST">
                         <input type="hidden" id="listIdToUpdate" name="listIdToUpdate" class="editListId" value="">
                         <label for="editListName"><b>List name</b></label>
                         <input type="text" id="editListName" class="form-control" name="editListName" value="" required>
                         <button type="submit" class="btn btn-primary margin10px">Update list</button>
-                    </form>
-                    <hr>
-                    <h2 class="permanentMarker">Delete list</h2>
-                    <form action="/app/posts/delete.php" method="POST">
-                        <input type="hidden" id="listIdToDelete" name="listIdToDelete" class="editListId" value="">
-                        <label for="alsoDeleteTasks"><b>Optional:</b> Also delete stickies associated with the list</label>
-                        <input type="checkbox" id="alsoDeleteTasks" class="form-check-label" name=" alsoDeleteTasks"><br>
-                        <button type="submit" class="btn btn-danger margin10px" onclick="return confirm('Are you sure? This cannot be undone.')">Delete list</button>
-                    </form>
-                    <button type="button" class="cancel btn btn-secondary">Cancel</button>
+
+
+                        <!-- If the user has created tasks, this button is visible when editing lists. When pressing the button, all tasks in the choosen list becomes completed in the database -->
+                        <form action="/app/posts/update.php" method="post">
+                            <?php if (count($tasks) > 0) : ?>
+                                <input type="hidden" id="completeAllTasks" name="completeAllTasks" class="editListId" value="">
+                                <button type="submit" class="btn btn-primary margin10px">
+                                    Mark all tasks as completed
+                                </button>
+                            <?php endif; ?>
+                        </form>
+
+                        <hr>
+                        <h2 class="permanentMarker">Delete list</h2>
+
+                        <form action="/app/posts/delete.php" method="POST">
+                            <input type="hidden" id="listIdToDelete" name="listIdToDelete" class="editListId" value="">
+                            <label for="alsoDeleteTasks"><b>Optional:</b> Also delete stickies associated with the list</label>
+                            <input type="checkbox" id="alsoDeleteTasks" class="form-check-label" name=" alsoDeleteTasks"><br>
+                            <button type="submit" class="btn btn-danger margin10px" onclick="return confirm('Are you sure? This cannot be undone.')">Delete list</button>
+                        </form>
+
+                        <button type="button" class="cancel btn btn-secondary">Cancel</button>
                 </div>
             </div>
         </div>
@@ -236,42 +260,56 @@ require __DIR__ . '/views/errormsg.php';
 require __DIR__ . '/views/warningmsg.php';
 ?>
 
-<form action="wunderlists.php" method="GET">
-    <div class="d-flex justify-content-end">
-        <div class="p-2">
-            <select class="form-control" name="show">
-                <option disabled selected value>Show only:</option>
-                <option value="completed" name="completed">Completed</option>
-                <option value="incomplete" name="incomplete">Incomplete</option>
-                <option value="toDoToday" name="toDoToday">To be completed today</option>
-                <option value="showAll" name="showAll">Show All</option>
-            </select>
-        </div>
-
-        <div class="p-2">
-
-            <select class="form-control" name="showListItemsOnly">
-                <option disabled selected value>Filter by list:</option>
-                <option value="<?php null ?>" name="<?php null ?>">Show stickiess without a list</option>
-                <?php
-                for ($i = 0; $i < count($lists); $i++) : ?>
-                    <option value="<?php echo $lists[$i]['id'] ?>" name="<?php echo htmlspecialchars($lists[$i]['title']); ?>"><?php echo htmlspecialchars($lists[$i]['title']); ?></option>
-                <?php endfor; ?>
-            </select>
-        </div>
-        <div class="p-2">
-            <select class="form-control" name="sort">
-                <option disabled selected value>Sort by:</option>
-                <option value="deadline" name="deadline">Deadline</option>
-                <option value="task" name="task">Title</option>
-                <option value="completed" name="completed">Completed</option>
-            </select>
-        </div>
-        <div class="p-2">
-            <button type="submit" class="btn btn-primary">Sort</button>
-        </div>
+<!-- Search-form -->
+<div class="searchFormContainer">
+    <div class="searchInput">
+        <form action="wunderlists.php" method="GET">
+            <input class="form-control" type="text" id="search" name="search">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
     </div>
-    <div><button type="button" id="changeFont" class="btn btn-link">Reader Friendly mode</button></div>
+
+
+    <form action="wunderlists.php" method="GET">
+        <div class="d-flex justify-content-end">
+
+            <div class="p-2">
+                <select class="form-control" name="show">
+                    <option disabled selected value>Show only:</option>
+                    <option value="completed" name="completed">Completed</option>
+                    <option value="incomplete" name="incomplete">Incomplete</option>
+                    <option value="toDoToday" name="toDoToday">To be completed today</option>
+                    <option value="showAll" name="showAll">Show All</option>
+                </select>
+            </div>
+
+            <div class="p-2">
+
+                <select class="form-control" name="showListItemsOnly">
+                    <option disabled selected value>Filter by list:</option>
+                    <option value="<?php null ?>" name="<?php null ?>">Show stickiess without a list</option>
+                    <?php
+                    for ($i = 0; $i < count($lists); $i++) : ?>
+                        <option value="<?php echo $lists[$i]['id'] ?>" name="<?php echo htmlspecialchars($lists[$i]['title']); ?>"><?php echo htmlspecialchars($lists[$i]['title']); ?>
+                        </option>
+                    <?php endfor; ?>
+                </select>
+
+            </div>
+            <div class="p-2">
+                <select class="form-control" name="sort">
+                    <option disabled selected value>Sort by:</option>
+                    <option value="deadline" name="deadline">Deadline</option>
+                    <option value="task" name="task">Title</option>
+                    <option value="completed" name="completed">Completed</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary"> Sort </button>
+
+        </div>
+</div>
+<div><button type="button" id="changeFont" class="btn btn-link">Reader Friendly mode</button></div>
 </form>
 
 
@@ -288,6 +326,8 @@ if (isset($_GET['sort'])) {
         return $sorted;
     });
 }
+
+
 
 
 // if-statements that manipulate the tasks array to filter by complete/incomplete/today's date. Because showAll is not defined it will return the full list by default.
@@ -325,13 +365,12 @@ if (isset($_GET['showListItemsOnly'])) {
     $tasks = $showResult;
 }
 
-
-
 ?>
 
 <div class="corkBoard">
     <div id="taskContents" class="container reenieFont">
         <div class="row">
+
             <?php
             for ($i = 0; $i < count($tasks); $i++) : ?>
                 <div class="stickyNote text-wrap text-break">
@@ -340,20 +379,42 @@ if (isset($_GET['showListItemsOnly'])) {
                     <div class="col-sm"><b>Deadline:</b> <span class="deadline"><?php echo htmlspecialchars($tasks[$i]['deadline']) ?></div>
                     <div class="col-sm"><b>Completed:</b>
                         <?php
-                        if ($tasks[$i]['completed'] === '1') {
+                        if ($tasks[$i]['completed'] === '1' || $tasks[$i]['completed'] === 1) {
                             echo 'Yes';
                         } else {
                             echo 'No';
                         } ?>
                     </div>
-                    <div class="col-sm"><b>Belongs to list: </b><span class="list" id="<?php echo htmlspecialchars($tasks[$i]['list_id']) ?>"><?php echo htmlspecialchars($tasks[$i]['title']) ?></span></div>
+                    <div class="col-sm"><b>Belongs to list: </b><span class="list" id="<?php echo ($tasks[$i]['list_id']) ?>"><?php echo ($tasks[$i]['title']) ?></span></div>
 
                     <button type="button" class="editTaskButton" id="<?php echo htmlspecialchars($tasks[$i]['task_id']) ?>">Edit</button>
                 </div>
             <?php endfor; ?>
+
+            <!-- When the user "Sort by list" there is another button that completes all tasks in the choosen list. The button is only visable if there are tasks that are'nt completed in the list shown -->
+            <div class="completedContainer">
+
+                <?php
+                for ($i = 0; $i < count($tasks); $i++) :
+                    if ($tasks[$i]['completed'] === '0' || $tasks[$i]['completed'] === 0) { ?>
+                        <?php if (isset($_GET['showListItemsOnly'])) { ?>
+                            <form action="/app/posts/update.php" method="post">
+                                <?php for ($i = 0; $i < count($tasks); $i++) : ?>
+                                    <input type="hidden" id="completeAllTasksOnCorkboard" name="completeAllTasksOnCorkboard" value="<?php echo $tasks[$i]['id'] ?>">
+                                <?php endfor; ?>
+
+                                <button type="submit" class="btn btn-primary margin10px Alldone">
+                                    Mark all tasks as completed!
+                                </button>
+                            </form>
+                        <?php }; ?>
+                    <?php }; ?>
+                <?php endfor; ?>
+            </div>
         </div>
     </div>
 </div>
+
 <script src="/assets/scripts/wunderlist.js"></script>
 <?php
 require __DIR__ . '/views/footer.php';
