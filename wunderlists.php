@@ -290,6 +290,8 @@ if (isset($_GET['sort'])) {
 }
 
 
+
+
 // if-statements that manipulate the tasks array to filter by complete/incomplete/today's date. Because showAll is not defined it will return the full list by default.
 if (isset($_GET['show'])) {
     if ($_GET['show'] === 'completed') {
