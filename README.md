@@ -4,6 +4,28 @@
 
 This is the final project of 2021 in the web development course at Yrgo (WU21). The aim is to create a website where a user can sign up, log in and create lists and tasks. The website is built using php, javascript and css.
 
+# Requirements
+
+The application should be written in HTML, CSS, JavaScript, SQL and PHP.
+
+The application should be built using a SQLite database with at least three different tables.
+
+The application should be pushed to a public repository on GitHub.
+
+The application should be responsive and be built using the method mobile-first.
+
+The application should be implement secure hashed passwords when signing up.
+
+The project should implement an accessible graphical user interface.
+
+The project should declare strict types in files containing only PHP code.
+
+The project should not include any coding errors, warning or notices.
+
+The project must be tested on at least two of your classmates computers. Add the testers name to the README.md file.
+
+The project must receive a code review by another student. Add at least 10 comments to the student's README.md file through a pull request. Give feedback to the student below your name. The last student gives feedback to the first student in the list. Add your feedback one day before the presentation.
+
 # Installation
 
 Either visit the demo here: https://stickies.deliciaes.com/
